@@ -35,35 +35,36 @@ python -m vit_jax.main --workdir=/tmp/vit \
 
 import ml_collections
 
-from vit_jax.configs import common
-from vit_jax.configs import models
+from vit_jax.configs import common, models
 
 
 def get_config(model_or_filename):
-  """Returns default parameters for finetuning ViT `model` on `dataset`."""
-  config = common.get_config()
+    """Returns default parameters for finetuning ViT `model` on `dataset`."""
+    config = common.get_config()
 
-  config.pretrained_dir = 'gs://vit_models/augreg'
+    config.pretrained_dir = "gs://vit_models/augreg"
 
-  config.model_or_filename = model_or_filename
-  model = model_or_filename.split('-')[0]
-  if model not in models.AUGREG_CONFIGS:
-    raise ValueError(f'Unknown Augreg model "{model}"'
-                     f'- not found in {set(models.AUGREG_CONFIGS.keys())}')
-  config.model = models.AUGREG_CONFIGS[model].copy_and_resolve_references()
-  config.model.transformer.dropout_rate = 0  # No AugReg during fine-tuning.
+    config.model_or_filename = model_or_filename
+    model = model_or_filename.split("-")[0]
+    if model not in models.AUGREG_CONFIGS:
+        raise ValueError(
+            f'Unknown Augreg model "{model}"'
+            f"- not found in {set(models.AUGREG_CONFIGS.keys())}"
+        )
+    config.model = models.AUGREG_CONFIGS[model].copy_and_resolve_references()
+    config.model.transformer.dropout_rate = 0  # No AugReg during fine-tuning.
 
-  # These values are often overridden on the command line.
-  config.base_lr = 0.03
-  config.total_steps = 500
-  config.warmup_steps = 100
-  config.pp = ml_collections.ConfigDict()
-  config.pp.train = 'train'
-  config.pp.test = 'test'
-  config.pp.resize = 448
-  config.pp.crop = 384
+    # These values are often overridden on the command line.
+    config.base_lr = 0.03
+    config.total_steps = 500
+    config.warmup_steps = 100
+    config.pp = ml_collections.ConfigDict()
+    config.pp.train = "train"
+    config.pp.test = "test"
+    config.pp.resize = 448
+    config.pp.crop = 384
 
-  # This value MUST be overridden on the command line.
-  config.dataset = ''
+    # This value MUST be overridden on the command line.
+    config.dataset = ""
 
-  return config
+    return config

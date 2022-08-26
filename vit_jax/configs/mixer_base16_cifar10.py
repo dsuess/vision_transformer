@@ -14,17 +14,17 @@
 
 import ml_collections
 
-from vit_jax.configs import common
-from vit_jax.configs import models
+from vit_jax.configs import common, models
 
 
 def get_config():
-  """Returns config for training Mixer-B/16 on cifar10."""
-  config = common.get_config()
-  config.model_type = 'Mixer'
-  config.model = models.get_mixer_b16_config()
-  config.dataset = 'cifar10'
-  config.total_steps = 10_000
-  config.pp = ml_collections.ConfigDict(
-      {'train': 'train[:98%]', 'test': 'test', 'crop': 224})
-  return config
+    """Returns config for training Mixer-B/16 on cifar10."""
+    config = common.get_config()
+    config.model_type = "Mixer"
+    config.model = models.get_mixer_b16_config()
+    config.dataset = "cifar10"
+    config.total_steps = 10_000
+    config.pp = ml_collections.ConfigDict(
+        {"train": "train[:98%]", "test": "test", "crop": 224}
+    )
+    return config

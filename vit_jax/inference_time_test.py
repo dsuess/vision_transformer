@@ -17,28 +17,26 @@ import tempfile
 
 from absl.testing import absltest
 
-from vit_jax import inference_time
-from vit_jax import test_utils
+from vit_jax import inference_time, test_utils
 from vit_jax.configs import inference_time as config_lib
 from vit_jax.configs import models
 
 
 class InferenceTimeTest(absltest.TestCase):
+    def test_main(self):
+        config = config_lib.get_config()
+        config.num_classes = 10
+        config.image_size = 224
+        config.batch = 8
+        config.model_name = "testing"
+        model_config = models.get_testing_config()
 
-  def test_main(self):
-    config = config_lib.get_config()
-    config.num_classes = 10
-    config.image_size = 224
-    config.batch = 8
-    config.model_name = 'testing'
-    model_config = models.get_testing_config()
-
-    workdir = tempfile.gettempdir()
-    config.pretrained_dir = workdir
-    test_utils.create_checkpoint(model_config, f'{workdir}/testing.npz')
-    inference_time.inference_time(config, workdir)
-    self.assertNotEmpty(glob.glob(f'{workdir}/events.out.tfevents.*'))
+        workdir = tempfile.gettempdir()
+        config.pretrained_dir = workdir
+        test_utils.create_checkpoint(model_config, f"{workdir}/testing.npz")
+        inference_time.inference_time(config, workdir)
+        self.assertNotEmpty(glob.glob(f"{workdir}/events.out.tfevents.*"))
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

@@ -14,93 +14,83 @@
 
 from typing import Callable, Sequence, TypeVar
 
-from flax import linen as nn
 import jax.numpy as jnp
+from flax import linen as nn
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def weight_standardize(w, axis, eps):
-  """Subtracts mean and divides by standard deviation."""
-  w = w - jnp.mean(w, axis=axis)
-  w = w / (jnp.std(w, axis=axis) + eps)
-  return w
+    """Subtracts mean and divides by standard deviation."""
+    w = w - jnp.mean(w, axis=axis)
+    w = w / (jnp.std(w, axis=axis) + eps)
+    return w
 
 
 class StdConv(nn.Conv):
-  """Convolution with weight standardization."""
+    """Convolution with weight standardization."""
 
-  def param(self,
-            name: str,
-            init_fn: Callable[..., T],
-            *init_args) -> T:
-    param = super().param(name, init_fn, *init_args)
-    if name == 'kernel':
-      param = weight_standardize(param, axis=[0, 1, 2], eps=1e-5)
-    return param
+    def param(self, name: str, init_fn: Callable[..., T], *init_args) -> T:
+        param = super().param(name, init_fn, *init_args)
+        if name == "kernel":
+            param = weight_standardize(param, axis=[0, 1, 2], eps=1e-5)
+        return param
 
 
 class ResidualUnit(nn.Module):
-  """Bottleneck ResNet block."""
+    """Bottleneck ResNet block."""
 
-  features: int
-  strides: Sequence[int] = (1, 1)
+    features: int
+    strides: Sequence[int] = (1, 1)
 
-  @nn.compact
-  def __call__(self, x):
-    needs_projection = (
-        x.shape[-1] != self.features * 4 or self.strides != (1, 1))
+    @nn.compact
+    def __call__(self, x):
+        needs_projection = x.shape[-1] != self.features * 4 or self.strides != (1, 1)
 
-    residual = x
-    if needs_projection:
-      residual = StdConv(
-          features=self.features * 4,
-          kernel_size=(1, 1),
-          strides=self.strides,
-          use_bias=False,
-          name='conv_proj')(
-              residual)
-      residual = nn.GroupNorm(name='gn_proj')(residual)
+        residual = x
+        if needs_projection:
+            residual = StdConv(
+                features=self.features * 4,
+                kernel_size=(1, 1),
+                strides=self.strides,
+                use_bias=False,
+                name="conv_proj",
+            )(residual)
+            residual = nn.GroupNorm(name="gn_proj")(residual)
 
-    y = StdConv(
-        features=self.features,
-        kernel_size=(1, 1),
-        use_bias=False,
-        name='conv1')(
-            x)
-    y = nn.GroupNorm(name='gn1')(y)
-    y = nn.relu(y)
-    y = StdConv(
-        features=self.features,
-        kernel_size=(3, 3),
-        strides=self.strides,
-        use_bias=False,
-        name='conv2')(
-            y)
-    y = nn.GroupNorm(name='gn2')(y)
-    y = nn.relu(y)
-    y = StdConv(
-        features=self.features * 4,
-        kernel_size=(1, 1),
-        use_bias=False,
-        name='conv3')(
-            y)
+        y = StdConv(
+            features=self.features, kernel_size=(1, 1), use_bias=False, name="conv1"
+        )(x)
+        y = nn.GroupNorm(name="gn1")(y)
+        y = nn.relu(y)
+        y = StdConv(
+            features=self.features,
+            kernel_size=(3, 3),
+            strides=self.strides,
+            use_bias=False,
+            name="conv2",
+        )(y)
+        y = nn.GroupNorm(name="gn2")(y)
+        y = nn.relu(y)
+        y = StdConv(
+            features=self.features * 4, kernel_size=(1, 1), use_bias=False, name="conv3"
+        )(y)
 
-    y = nn.GroupNorm(name='gn3', scale_init=nn.initializers.zeros)(y)
-    y = nn.relu(residual + y)
-    return y
+        y = nn.GroupNorm(name="gn3", scale_init=nn.initializers.zeros)(y)
+        y = nn.relu(residual + y)
+        return y
 
 
 class ResNetStage(nn.Module):
-  """A ResNet stage."""
+    """A ResNet stage."""
 
-  block_size: Sequence[int]
-  nout: int
-  first_stride: Sequence[int]
+    block_size: Sequence[int]
+    nout: int
+    first_stride: Sequence[int]
 
-  @nn.compact
-  def __call__(self, x):
-    x = ResidualUnit(self.nout, strides=self.first_stride, name='unit1')(x)
-    for i in range(1, self.block_size):
-      x = ResidualUnit(self.nout, strides=(1, 1), name=f'unit{i + 1}')(x)
-    return x
+    @nn.compact
+    def __call__(self, x):
+        x = ResidualUnit(self.nout, strides=self.first_stride, name="unit1")(x)
+        for i in range(1, self.block_size):
+            x = ResidualUnit(self.nout, strides=(1, 1), name=f"unit{i + 1}")(x)
+        return x

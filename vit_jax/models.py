@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from vit_jax import models_lit
-from vit_jax import models_mixer
-from vit_jax import models_vit
+from vit_jax import models_lit, models_mixer, models_vit
 from vit_jax.configs import models as model_configs
 
 # Note that you probably want to import the individual modules separately
@@ -31,10 +29,10 @@ VisionTransformer = models_vit.VisionTransformer
 
 
 def get_model(name, **kw):
-  """Returns a model as specified in `model_configs.MODEL_CONFIGS`."""
-  if name.startswith('Mixer-'):
-    return MlpMixer(**model_configs.MODEL_CONFIGS[name], **kw)
-  elif name.startswith('LiT-'):
-    return LitModel(**model_configs.MODEL_CONFIGS[name], **kw)
-  else:
-    return VisionTransformer(**model_configs.MODEL_CONFIGS[name], **kw)
+    """Returns a model as specified in `model_configs.MODEL_CONFIGS`."""
+    if name.startswith("Mixer-"):
+        return MlpMixer(**model_configs.MODEL_CONFIGS[name], **kw)
+    elif name.startswith("LiT-"):
+        return LitModel(**model_configs.MODEL_CONFIGS[name], **kw)
+    else:
+        return VisionTransformer(**model_configs.MODEL_CONFIGS[name], **kw)
