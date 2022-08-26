@@ -63,7 +63,6 @@ def _tree_flatten_with_names(tree):
 
     # Custom traversal should visit the same number of leaves.
     assert len(val_names) == len(vals)
-
     return [(val_names[i], v) for i, v in zip(inv_perm, vals)], tree_def
 
 

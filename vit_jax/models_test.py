@@ -67,12 +67,14 @@ class ModelsTest(parameterized.TestCase):
             variables = model.init(rng, images=images, tokens=tokens)
             zimg, ztxt, _ = model.apply(variables, images=images, tokens=tokens)
             self.assertEqual(zimg.shape[0], batch_size)
-            self.assertEqual(zimg.shape, ztxt.shape)
+            self.assertEqual(zimg.shape, ztxt.shape)  # pylint: disable=no-member
         else:
             variables = model.init(rng, images, train=False)
             outputs = model.apply(variables, images, train=False)
             if "unpooled" in name:
-                self.assertEqual((2, 196, 1000), outputs.shape)
+                self.assertEqual(
+                    (2, 196, 1000), outputs.shape  # pylint: disable=no-member
+                )
             else:
                 self.assertEqual((2, 1000), outputs.shape)
         param_count = sum(p.size for p in jax.tree_flatten(variables)[0])

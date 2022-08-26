@@ -29,20 +29,31 @@ black = "^22.6.0"
 pylint = "^2.15.0"
 isort = "^5.10.1"
 pytest = "^7.1.2"
+pytest-xdist = { version = "^2.5.0", extras = ["psutil"] }
 pdbpp = "^0.10.3"
-pyright = "^1.1.268"
-
-[tool.pyright]
-
-[tool.pylint.variables]
-good-names = ["T", "x", "y", "x1", "y1", "x2", "y2"]
 
 [tool.pylint.messages_control]
-disable = ["C0114", "C0115", "C0116", "R1705", "W0511", "R0913", "R0902"]
+disable = [
+    "invalid-name",
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "arguments-differ",
+    "line-too-long",
+    "too-few-public-methods",
+    "too-many-locals",
+    "too-many-arguments",
+    "consider-merging-isinstance",
+    "consider-using-generator",
+    "too-many-statements",
+    "no-else-return",
+    "unnecessary-lambda-assignment",
+    "unnecessary-comprehension"
+]
 
 [tool.pytest.ini_options]
 testpaths = ["vit_jax"]
-filterwarnings = []
+filterwarnings = ["ignore:DeprecationWarning"]
 markers = []
 
 [tool.isort]

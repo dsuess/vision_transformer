@@ -16,7 +16,6 @@ import os
 import tempfile
 
 import ml_collections
-import tensorflow_datasets as tfds
 from absl.testing import absltest, parameterized
 
 from vit_jax import test_utils, train

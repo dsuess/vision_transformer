@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import functools
-import os
 import time
 
 import flax
@@ -22,11 +21,10 @@ import jax
 import jax.numpy as jnp
 import ml_collections
 import numpy as np
-import tensorflow as tf
 from absl import logging
 from clu import metric_writers
 
-from vit_jax import checkpoint, models
+from vit_jax import models
 from vit_jax.configs import models as config_lib
 
 

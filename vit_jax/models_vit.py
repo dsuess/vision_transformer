@@ -54,7 +54,7 @@ class AddPositionEmbs(nn.Module):
         """
         # inputs.shape is (batch_size, seq_len, emb_dim).
         assert inputs.ndim == 3, (
-            "Number of dimensions should be 3," " but it is: %d" % inputs.ndim
+            "Number of dimensions should be 3," f" but it is: {inputs.dim}"
         )
         pos_emb_shape = (1, inputs.shape[1], inputs.shape[2])
         pe = self.param("pos_embedding", self.posemb_init, pos_emb_shape)

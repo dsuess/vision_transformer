@@ -88,10 +88,7 @@ def get_datasets(config):
         test_dir = os.path.join(config.dataset, "test")
         if not os.path.isdir(train_dir):
             raise ValueError(
-                'Expected to find directories"{}" and "{}"'.format(
-                    train_dir,
-                    test_dir,
-                )
+                f'Expected to find directories"{train_dir}" and "{test_dir}"'
             )
         logging.info(
             'Reading dataset from directories "%s" and "%s"', train_dir, test_dir

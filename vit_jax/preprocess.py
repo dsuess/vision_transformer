@@ -70,6 +70,7 @@ class BertTokenizer:
         return self._preprocess(text[None])[0]
 
     def _preprocess(self, texts):
+        # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         token_ids = self._tokenizer.tokenize(texts)
         tokens, mask = tensorflow_text.pad_model_inputs(token_ids, self.max_len - 1)
         del mask  # Recovered from zero padding in model.
