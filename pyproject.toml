@@ -20,6 +20,7 @@ tensorflow-cpu = "^2.4.0"
 tensorflow-datasets = "^4.0.1"
 tensorflow-probability = "^0.11.1"
 tensorflow-text = "^2.9.0"
+wandb = "^0.13.2"
 
 
 [tool.poetry.dev-dependencies]
@@ -48,7 +49,9 @@ disable = [
     "too-many-statements",
     "no-else-return",
     "unnecessary-lambda-assignment",
-    "unnecessary-comprehension"
+    "unnecessary-comprehension",
+    # isort FTW
+    "wrong-import-order"
 ]
 
 [tool.pytest.ini_options]

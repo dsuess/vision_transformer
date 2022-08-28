@@ -1,5 +1,4 @@
 setup:
-    python3 -m pip install poetry==1.2.0rc1
     poetry install
     mkdir -p .git/hooks
     ln -f -s `pwd`/hooks/* .git/hooks

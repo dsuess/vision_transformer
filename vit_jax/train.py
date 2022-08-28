@@ -22,11 +22,18 @@ import jax.numpy as jnp
 import ml_collections
 import numpy as np
 import tensorflow as tf
-from absl import logging
-from clu import metric_writers, periodic_actions
+from absl import flags, logging
+from clu import periodic_actions
 from flax.training import checkpoints as flax_checkpoints
 
 from vit_jax import checkpoint, input_pipeline, models, momentum_clip, utils
+
+from . import metric_writers
+
+FLAGS = flags.FLAGS
+_WANDB_PROJECT = flags.DEFINE_string(
+    "wandb-project", None, help="WandB project to log to"
+)
 
 
 def make_update_fn(*, apply_fn, accum_steps, lr_fn):
@@ -170,7 +177,9 @@ def train_and_evaluate(config: ml_collections.ConfigDict, workdir: str):
     update_rng_repl = flax.jax_utils.replicate(jax.random.PRNGKey(0))
 
     # Setup metric writer & hooks.
-    writer = metric_writers.create_default_writer(workdir, asynchronous=False)
+    writer = metric_writers.create_default_writer(
+        workdir, wandb_project=_WANDB_PROJECT.value
+    )
     writer.write_hparams(config.to_dict())
     hooks = [
         periodic_actions.Profile(logdir=workdir),
